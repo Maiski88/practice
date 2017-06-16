@@ -1,0 +1,46 @@
+---
+title: "practice"
+author: "Mai Yamamoto"
+date: "June 20, 2017"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, out.width="400px", dpi=120)
+```
+
+## Outline
+
+1. Why R??
+2. RStudio short walkthrough 
+3. What is Git & GitHub and Why do we care?
+4. Practice! 
+
+## Why R??
+
+- Go-to language for statistics 
+- Heavy use in academic + FREE 
+- More flexible, powerful and transparent than statistical softwares
+
+## Where to get what you want 
+
+- CRAN <https://cran.r-project.org/> 
+- Bioconductor <https://www.bioconductor.org/>
+- GitHub 
+
+```{r, out.width = "400px"}
+knitr::include_graphics("github-logo.png")
+```
+
+## Slide with R Output
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+## Slide with Plot
+
+```{r pressure, out.width = "400px"}
+plot(pressure)
+```
+
