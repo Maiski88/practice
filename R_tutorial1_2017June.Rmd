@@ -1,8 +1,10 @@
 ---
-title: "practice"
+title: "R Tutorial"
 author: "Mai Yamamoto"
 date: "June 20, 2017"
-output: slidy_presentation
+output: 
+  slidy_presentation:
+    css: style.css
 ---
 
 ```{r setup, include=FALSE}
@@ -22,25 +24,64 @@ knitr::opts_chunk$set(echo = FALSE, out.width="400px", dpi=120)
 - Heavy use in academic + FREE 
 - More flexible, powerful and transparent than statistical softwares
 
+
 ## Where to get what you want 
 
 - CRAN <https://cran.r-project.org/> 
 - Bioconductor <https://www.bioconductor.org/>
 - GitHub 
 
-```{r, out.width = "400px"}
+```{r, out.width = "500px"}
+knitr::include_graphics("Bioconductor_logo.svg.png")
 knitr::include_graphics("github-logo.png")
 ```
 
-## Slide with R Output
+## flexibility in plots generation
 
-```{r cars, echo = TRUE}
-summary(cars)
+Example: Urine metabolome of IBS
+
+```{r, echo = FALSE, out.width = "500px"}
+setwd("/home/maiski/R/workshop2017/mydata")
+library(ggplot2)
+# load IBS data
+ibs_data <- read.csv("IBSCTL_Osm_all_cor.csv")
+
+#check the column names to see what's in the data
+#colnames(ibs_data)
+# QQ plot
+
+
+
+# ggplot theme setting
+theme = theme_set(theme_minimal())
+theme = theme_update(legend.position="top", legend.title=element_blank(), panel.grid.major.x=element_blank())
+# ggplot - boxplot
+boxplot1 <- ggplot(ibs_data, aes(Class, log.GalOHLysine.))
+boxplot1 + geom_boxplot(aes(colour = Class), outlier.color = "red", outlier.size = 0) + geom_jitter(aes(alpha = 5), width = 0.1)
+
+# PCA plot
+
+
 ```
 
-## Slide with Plot
+## TIC by using package xcms 
+Typical positive ion mode urine TIC
 
-```{r pressure, out.width = "400px"}
-plot(pressure)
+```{r, echo = FALSE, message = FALSE, out.width = "900px"}
+
+library(xcms)
+mzXML_TOF1 <- "150522_05.mzXML"
+
+#Assigning above files into xcmsRaw object; matrix object
+msi <- xcmsRaw(mzXML_TOF1)
+## With smoothing
+profMethod(msi) <- "intlin"
+plotTIC(msi)
+
 ```
+
+## NEXT
+
+- How to use RStudio 
+- Git & GitHub
 
