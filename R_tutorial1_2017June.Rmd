@@ -21,26 +21,117 @@ knitr::opts_chunk$set(echo = FALSE, out.width="400px", dpi=120)
 ## Why R??
 
 - Go-to language for statistics 
-- Heavy use in academic + FREE 
-- More flexible, powerful and transparent than statistical softwares
+- <span style="color:red">FREE</span> + Large & expanding community 
+- More flexible, powerful, transparent and reproducible than statistical softwares
+  + *<span style="color:green">"Are Your Figures Worth a Thousand Words?"</span>*
+    + Weissgerber et al. 2015, Beyond Bar and Line Graphs:Time for a New Data Presentation Paradigm. PLoSBiol 13(4)
+    + 703 physiology journal reviewd 
+    + 85.6% of them included at least one bar graph
 
-
-## Where to get what you want 
-
-- CRAN <https://cran.r-project.org/> 
-- Bioconductor <https://www.bioconductor.org/>
-- GitHub 
-
-```{r, out.width = "500px"}
-knitr::include_graphics("Bioconductor_logo.svg.png")
-knitr::include_graphics("github-logo.png")
+```{r, out.width = "700px"}
+knitr::include_graphics("beyondbars.PNG")
 ```
 
-## flexibility in plots generation
+  + Transparent and reproducible 
+    + <span style="color:red">Git</span> for version control 
+    + <span style="color:red">GitHub</span> for data sharing and collaboration
 
-Example: Urine metabolome of IBS
+## Flexibility in plots generation
+Example: **Urine metabolome of IBS**
 
-```{r, echo = FALSE, out.width = "500px"}
+Data exploration with PCA
+
+Plot colour = groups, shape = sex, size = age
+
+```{r, echo = FALSE, out.width = "600px"}
+setwd("/home/maiski/R/workshop2017/mydata")
+ibs_data <- read.csv("IBSCTL_Osm_all_cor.csv")
+# PCA plot
+metabolite <- ibs_data[, 15:148]
+metab <- na.omit(metabolite)
+PCA_IBS_metabolite <- prcomp(metab)
+
+# Create a lattice plot with two rows and two columns
+# oPar <- par(mfrow = c(2,2)) # set new and save old graphics state
+
+ plot(PCA_IBS_metabolite, n = 15)
+
+# Function to plot PCA of IBS
+ibsPlot <- function(x, y, groupname, sex, age,
+                    main = "",
+                    xlab = "",
+                    ylab = "") { ## it's advantageous to have variable names same as how you name variables normally
+  
+  # Purpose:
+  #     Create a plot of IBS data in which individual points
+  #     are colored by classes, shaped by gender and scaled by
+  #     age.
+  # Version:  1.0
+  # Date:     2016-06-17
+  # Author:   Mai Yamamoto
+  #
+  # Parameters:
+  #     x: numeric   x-coordinates of point
+  #     y: numeric   y-coordinates of point
+  #     classes: factors with level CTL, IBS1 and IBS2
+  #     sex: integer of 0 for male, 1 for female
+  #     age: numeric
+  # Value:
+  #     None. Creates plot as side-effect
+  
+  N <- length(x)  #  number of points
+  
+  # 1. Create a color vector computed from species and sex factors. Taken as
+  #    integers, both factors can be either 1 or 2. We use this to
+  #    pick a color value from a vector of four colours. The first factor
+  #    is transformed to (0, 2) , the second is (1,2), the index to get
+  #    a color from the colSet vector is obtained by adding the two.
+  
+  colSet <- c("red", "red4", "chartreuse2", "green4", "royalblue", "darkblue")
+  colIndex <- ((as.integer(groupname) - 1) * 2) + as.integer(sex)
+  crabCols <- adjustcolor(colSet[colIndex], alpha.f = 0.7)
+  
+  # 2. create a vector of plotting characters. M: 0; F: 1
+  pchSet <- c(15, 16)
+  crabPch <- pchSet[as.integer(sex)]
+  
+  # 3. create a scale vector from sMin to sMax
+  sMin <- 2
+  sMax <- 4
+  crabCex <- (age - min(age)) / (max(age) - min(age)) # transform to [0, 1]
+  ### standard way to transform values
+  crabCex <- crabCex * ((sMax - sMin) + sMin)         # scale to [sMin, sMax]
+  
+  # 4. Plot ...
+  plot(x, y,
+       main = main, xlab = xlab, ylab = ylab,
+       pch = crabPch,
+       col = crabCols,
+       bg  = crabCols,
+       cex = crabCex)
+}
+
+ibsPlot(PCA_IBS_metabolite$x[, 1], PCA_IBS_metabolite$x[, 2],
+        ibs_data$Class, ibs_data[ , 4], ibs_data[ , 3],
+        main = "Principal components 1 and 2 IBS Urine",
+        xlab = "PC1",
+        ylab = "PC2")
+ibsPlot(PCA_IBS_metabolite$x[, 1], PCA_IBS_metabolite$x[, 3],
+        ibs_data$Class, ibs_data[ , 4], ibs_data[ , 3],
+        main = "Principal components 1 and 3 IBS Urine",
+        xlab = "PC1",
+        ylab = "PC3")
+ibsPlot(PCA_IBS_metabolite$x[, 2], PCA_IBS_metabolite$x[, 3],
+        ibs_data$Class, ibs_data[ , 4], ibs_data[ , 3],
+        main = "Principal components 2 and 3 IBS Urine",
+        xlab = "PC2",
+        ylab = "PC3")
+#par(oPar) # restore graphics state parameters
+```
+
+Q-Q plot for normality check & box-whisker plot with data points
+
+```{r, echo = FALSE, out.width = "700px"}
 setwd("/home/maiski/R/workshop2017/mydata")
 library(ggplot2)
 # load IBS data
@@ -49,8 +140,9 @@ ibs_data <- read.csv("IBSCTL_Osm_all_cor.csv")
 #check the column names to see what's in the data
 #colnames(ibs_data)
 # QQ plot
-
-
+x <- ibs_data$log.GalOHLysine.
+qqnorm(x)
+qqline(x, col=2)
 
 # ggplot theme setting
 theme = theme_set(theme_minimal())
@@ -58,11 +150,8 @@ theme = theme_update(legend.position="top", legend.title=element_blank(), panel.
 # ggplot - boxplot
 boxplot1 <- ggplot(ibs_data, aes(Class, log.GalOHLysine.))
 boxplot1 + geom_boxplot(aes(colour = Class), outlier.color = "red", outlier.size = 0) + geom_jitter(aes(alpha = 5), width = 0.1)
-
-# PCA plot
-
-
 ```
+
 
 ## TIC by using package xcms 
 Typical positive ion mode urine TIC
@@ -71,7 +160,6 @@ Typical positive ion mode urine TIC
 
 library(xcms)
 mzXML_TOF1 <- "150522_05.mzXML"
-
 #Assigning above files into xcmsRaw object; matrix object
 msi <- xcmsRaw(mzXML_TOF1)
 ## With smoothing
@@ -80,8 +168,65 @@ plotTIC(msi)
 
 ```
 
+## Reproducibility & flexibility 
+
+**<span style="color:green">cho.data</span> = Gene expression data of 237 genes with 17 time points**
+
+It makes sense to scale data because we are interested in changes over time
+
+- Transpose & scale in one line each
+
+```{r, echo = TRUE, out.width = "600px"}
+cho.data <- read.table("Logcho_237_4class.txt", skip=1)[, 3:19]
+x <- t(cho.data)
+x <- scale(x)
+cho.data <- as.data.frame(t(x))
+```
+
+- Plot with colour gradation showing changes in 10 randomly selected expression 
+
+```{r, echo = FALSE, message = FALSE, out.width = "700px"}
+
+# Change the column names
+colnames(cho.data) <- paste("t", 1:17, sep="")
+
+# Plot some expression profiles
+set.seed(112358)
+Sel <- sample(1:nrow(cho.data), 10) # 10 random rows and assign it to Sel
+
+matplot(t(cho.data[Sel, ]),
+        type="b", lwd=2, col=cm.colors(10), # cm.colors = gradation of cyan to madenta
+        main = "Random selection",
+        ylab = "Scaled expression levels",
+        xlab = "Timepoints")
+```
+
+## Where to get what you want 
+
+**Packages**
+
+- CRAN <https://cran.r-project.org/> : *install.packages()*
+- Bioconductor <https://www.bioconductor.org/> : *source("https://bioconductor.org/biocLite.R")* then *biocLite("name")*
+- GitHub : *install_github("author_name/package_name")*
+
+```{r, out.width = "500px"}
+knitr::include_graphics("Bioconductor_logo.svg.png")
+knitr::include_graphics("github-logo.png")
+```
+
+
+**Learning & Trouble shooting**
+
+- DataCamp <https://www.datacamp.com/> : Free, interactive courses 
+- Google : Just type in "R" and error message or key words
+
+```{r, out.width = "500px"}
+knitr::include_graphics("datacamp.png" )
+knitr::include_graphics( "Googlelogo.png")
+```
+
 ## NEXT
 
-- How to use RStudio 
-- Git & GitHub
+- How to use **RStudio** 
+- **Git & GitHub**
 
