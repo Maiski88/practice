@@ -81,34 +81,34 @@ ibsPlot <- function(x, y, groupname, sex, age,
   
   N <- length(x)  #  number of points
   
-  # 1. Create a color vector computed from species and sex factors. Taken as
-  #    integers, both factors can be either 1 or 2. We use this to
+  # 1. Create a color vector computed from group names and sex factors. Taken as
+  #    integers, group can be 1, 2, or 3 and sex can be either 1 or 2. We use this to
   #    pick a color value from a vector of four colours. The first factor
-  #    is transformed to (0, 2) , the second is (1,2), the index to get
+  #    is transformed to (0, 2, 4) , the second is (1,2), the index to get
   #    a color from the colSet vector is obtained by adding the two.
   
   colSet <- c("red", "red4", "chartreuse2", "green4", "royalblue", "darkblue")
   colIndex <- ((as.integer(groupname) - 1) * 2) + as.integer(sex)
-  crabCols <- adjustcolor(colSet[colIndex], alpha.f = 0.7)
+  ibsCols <- adjustcolor(colSet[colIndex], alpha.f = 0.7)
   
-  # 2. create a vector of plotting characters. M: 0; F: 1
+  # 2. create a vector of plotting characters. M: 15; F: 16
   pchSet <- c(15, 16)
-  crabPch <- pchSet[as.integer(sex)]
+  ibsPch <- pchSet[as.integer(sex)]
   
   # 3. create a scale vector from sMin to sMax
   sMin <- 2
   sMax <- 4
-  crabCex <- (age - min(age)) / (max(age) - min(age)) # transform to [0, 1]
+  ibsCex <- (age - min(age)) / (max(age) - min(age)) # transform to [0, 1]
   ### standard way to transform values
-  crabCex <- crabCex * ((sMax - sMin) + sMin)         # scale to [sMin, sMax]
+  ibsCex <- ibsCex * ((sMax - sMin) + sMin)         # scale to [sMin, sMax]
   
   # 4. Plot ...
   plot(x, y,
        main = main, xlab = xlab, ylab = ylab,
-       pch = crabPch,
-       col = crabCols,
-       bg  = crabCols,
-       cex = crabCex)
+       pch = ibsPch,
+       col = ibsCols,
+       bg  = ibsCols,
+       cex = ibsCex)
 }
 
 ibsPlot(PCA_IBS_metabolite$x[, 1], PCA_IBS_metabolite$x[, 2],
