@@ -6,6 +6,8 @@
 #  Authur: Mai Yamamoto
 
 
+a <- "chemistry"
+
 
 
 
