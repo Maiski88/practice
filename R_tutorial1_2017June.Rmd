@@ -2,7 +2,7 @@
 title: "R Tutorial"
 author: "Mai Yamamoto"
 date: "June 20, 2017"
-output: 
+output:
   slidy_presentation:
     css: style.css
 ---
@@ -44,7 +44,6 @@ Data exploration with PCA
 Plot colour = groups, shape = sex, size = age
 
 ```{r, echo = FALSE, out.width = "250px"}
-setwd("/home/maiski/R/workshop2017/mydata")
 ibs_data <- read.csv("IBSCTL_Osm_all_cor.csv")
 # PCA plot
 metabolite <- ibs_data[, 15:148]
@@ -134,15 +133,15 @@ ibsPlot(PCA_IBS_metabolite$x[, 2], PCA_IBS_metabolite$x[, 3],
 Q-Q plot for normality check & box-whisker plot with data points
 
 ```{r, echo = FALSE, out.width = "400px"}
-setwd("/home/maiski/R/workshop2017/mydata")
+
 library(ggplot2)
 # load IBS data
-ibs_data <- read.csv("IBSCTL_Osm_all_cor.csv")
+#ibs_data <- read.csv("IBSCTL_Osm_all_cor.csv")
 
 #check the column names to see what's in the data
 #colnames(ibs_data)
 # QQ plot
-x <- ibs_data$log.GalOHLysine.
+x <- ibs_data$metabolite128
 qqnorm(x)
 qqline(x, col=2)
 
@@ -150,8 +149,8 @@ qqline(x, col=2)
 theme = theme_set(theme_minimal())
 theme = theme_update(legend.position="top", legend.title=element_blank(), panel.grid.major.x=element_blank())
 # ggplot - boxplot
-boxplot1 <- ggplot(ibs_data, aes(Class, log.GalOHLysine.))
-boxplot1 + geom_boxplot(aes(colour = Class), outlier.color = "red", outlier.size = 0) + geom_jitter(aes(alpha = 5), width = 0.1)
+boxplot1 <- ggplot(ibs_data, aes(Class, metabolite128))
+boxplot1 + geom_boxplot(aes(colour = Class), outlier.color = "red", outlier.size = 2) + geom_jitter(aes(alpha = 5), width = 0.1)
 ```
 
 
